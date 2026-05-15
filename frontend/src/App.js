@@ -24,7 +24,6 @@ ChartJS.register(
 );
 
 const API = "https://job-tracker-fullstack-production-2577.up.railway.app/api";
-
 function App() {
 
   // ================= STATE =================
