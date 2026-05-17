@@ -23,7 +23,10 @@ ChartJS.register(
   Legend
 );
 
-const API = "https://job-tracker-fullstack-production-2577.up.railway.app/api";
+const API =
+  window.location.hostname === "localhost"
+    ? "http://localhost:8082/api"
+    : "https://job-tracker-backend-1-5rlr.onrender.com/api";
 function App() {
 
   // ================= STATE =================
@@ -214,7 +217,9 @@ function App() {
       if (!editId) {
         payload.date = new Date().toLocaleDateString();
       }
-
+      console.log(payload);
+      console.log(token);
+      
       const res = await fetch(
         editId ? `${API}/jobs/${editId}` : `${API}/jobs`,
         {
@@ -230,7 +235,14 @@ function App() {
       );
 
       if (!res.ok) {
-        throw new Error();
+
+        const errorText = await res.text();
+
+        console.log(errorText);
+
+        toast.error(errorText);
+
+        return;
       }
 
       toast.success(
@@ -319,15 +331,15 @@ function App() {
         body: JSON.stringify(auth),
       });
 
-      const data = await res.text();
+      const data = await res.json();
 
-      if (!res.ok || data.includes("Invalid")) {
+      if (!res.ok || !data.token) {
         toast.error("Invalid Login");
         return;
       }
 
-      localStorage.setItem("user", auth.username);
-      localStorage.setItem("token", data);
+      localStorage.setItem("user", data.username);
+      localStorage.setItem("token", data.token);
 
       setIsLoggedIn(true);
 

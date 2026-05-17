@@ -24,6 +24,9 @@ public class JobService {
     }
 
     public List<Job> getJobsByUser(String username) {
+        if (username == null || username.isEmpty()) {
+            return List.of();
+        }
         return jobRepository.findByUsername(username);
     }
 
@@ -34,11 +37,17 @@ public class JobService {
                     existing.setCompany(job.getCompany());
                     existing.setLocation(job.getLocation());
                     existing.setStatus(job.getStatus());
+                    existing.setNotes(job.getNotes());
+                    existing.setApplyLink(job.getApplyLink());
                     return jobRepository.save(existing);
-                }).orElseThrow(() -> new RuntimeException("Job not found"));
+                })
+                .orElseThrow(() -> new RuntimeException("Job not found"));
     }
 
     public void deleteJob(Long id) {
+        if (!jobRepository.existsById(id)) {
+            throw new RuntimeException("Job not found");
+        }
         jobRepository.deleteById(id);
     }
 }
